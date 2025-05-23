@@ -75,9 +75,11 @@ transfer_input_files = ""
 transfer_output_files = ""
 Queue NEVENT, FILEIN, FILEOUT, LOGPREFIX from (
 %s)'''
+    isdata = dataset in '/MET/ /SingleMuon/ /SingleElectron/ /EGamma/'  # [XXX]
+    year = 2018  # [XXX]
     executable = os.path.abspath(os.path.join(basedir, 'scripts', 'x509run'))
     x509up = generate_x509up()
-    prog = os.path.abspath(os.path.join(basedir, 'scripts', 'run.sh'))
+    prog = os.path.abspath(os.path.join(basedir, 'scripts', f'run-{"data" if isdata else "mc"}-{year}.sh'))
     outdir = os.path.join(outdir, dataset, prepid)
     logdir = os.path.join(basedir, 'scripts', 'log', dataset, prepid)
     if os.system("mkdir -p '%s' '%s'" % (outdir, logdir)):
