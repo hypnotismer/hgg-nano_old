@@ -62,7 +62,7 @@ class Sample:
             xsdb = json.load(open(os.path.join(directory, 'xsdb')))
         except Exception:
             print('querying xsdb %s' % dataset)
-            xsdb = requests.post('https://xsdb-temp.app.cern.ch/api/search', json={
+            xsdb = requests.post('https://xsecdb-xsdb-official.app.cern.ch/api/search', json={
                 'orderBy': [],
                 'pagination': { 'currentPage': 0, 'pageSize': 0 },
                 'search': { 'DAS': self.mcm_dataset },
