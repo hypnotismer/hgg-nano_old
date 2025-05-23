@@ -43,7 +43,7 @@ def eos_to_xrd(path):
     if path[:4] == '/eos': return 'root://eosuser.cern.ch/' + path
     return path
 
-def request(dataset, prepid, sample, target_nevents=None, dryrun=False, outdir='/eos/user/l/legao/hss/samples/CustomizedNanoAOD'):
+def request(dataset, prepid, sample, target_nevents=None, dryrun=False, outdir=None):
     jobstr = '''Universe = vanilla
 Executable = %s
 
@@ -77,6 +77,9 @@ Queue NEVENT, FILEIN, FILEOUT, LOGPREFIX from (
 %s)'''
     isdata = dataset in '/MET/ /SingleMuon/ /SingleElectron/ /EGamma/'  # [XXX]
     year = 2018  # [XXX]
+    if not outdir:
+        user = __import__('getpass').getuser()
+        outdir = f'/eos/user/{user[0]}/{user}/CustomizedNanoAOD/V0/{year}/{"Data" if isdata else "MC"}'
     executable = os.path.abspath(os.path.join(basedir, 'scripts', 'x509run'))
     x509up = generate_x509up()
     prog = os.path.abspath(os.path.join(basedir, 'scripts', f'run-{"data" if isdata else "mc"}-{year}.sh'))
