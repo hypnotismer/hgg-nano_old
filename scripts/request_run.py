@@ -76,7 +76,14 @@ transfer_output_files = ""
 Queue NEVENT, FILEIN, FILEOUT, LOGPREFIX from (
 %s)'''
     isdata = dataset in '/MET/ /SingleMuon/ /SingleElectron/ /EGamma/'  # [XXX]
-    year = 2018  # [XXX]
+    if 'UL16' in prepid:
+        year = '2016APV' if 'APV' in prepid else '2016'
+    elif 'UL17' in prepid:
+        year = '2017'
+    elif 'UL18' in prepid:
+        year = '2018'
+    else:
+        raise RuntimeError('year not recognized in prepid: %s' % prepid)
     if not outdir:
         user = __import__('getpass').getuser()
         outdir = f'/eos/user/{user[0]}/{user}/CustomizedNanoAOD/V0/{year}/{"Data" if isdata else "MC"}'
