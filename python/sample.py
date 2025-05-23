@@ -2,6 +2,7 @@ from __future__ import print_function
 import os
 import json
 import requests
+import multiprocessing
 
 basedir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -90,17 +91,22 @@ class Sample:
         # Special case: local directory.
         directory = dataset[5:]
         filelist = []
-        import ROOT
         for file in os.listdir(directory):
             if file[-5:] != '.root': continue
             file = os.path.join(directory, file)
             if os.stat(file).st_size < 1024 * 1024: continue
-            tfile = ROOT.TFile(file)
-            nevents = tfile.Get('Events').GetEntriesFast()
-            tfile.Close()
-            filelist.append({'file': [{'name': 'file:' + file, 'nevents': nevents}]})
-            print('%d root files found' % len(filelist))
+            filelist.append({'file': [{'name': 'file:' + file}]})
+        filelist = multiprocessing.Pool().map(self.count_nevents, filelist)
         return json.dumps(filelist)
+
+    def count_nevents(self, file):
+        import ROOT
+        tfile = ROOT.TFile(file['file'][0]['name'][5:])
+        nevents = tfile.Get('Events').GetEntriesFast()
+        tfile.Close()
+        file['file'][0]['nevents'] = nevents
+        print(file)
+        return file
 
     def select(self, target_nevents=None, prefix='root://cms-xrd-global.cern.ch/'):
 
