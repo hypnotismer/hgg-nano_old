@@ -12,8 +12,8 @@ import traceback
 
 samples = sample.list_samples()
 
-if len(sys.argv) < 2 or len(sys.argv) > 4:
-    print('Usage: %s [ <prepid> [ <nevent> [ <dryrun> ] ] ]' % os.path.basename(sys.argv[0]))
+if len(sys.argv) < 2 or len(sys.argv) > 5:
+    print('Usage: %s [ <prepid> [ <nevent> [ <dryrun> <nolog> ] ] ]' % os.path.basename(sys.argv[0]))
     print('\nAvailable prepids:')
     for dataset, dataset_samples in sorted(samples.items()):
         print('\n-', dataset)
@@ -43,7 +43,7 @@ def eos_to_xrd(path):
     if path[:4] == '/eos': return 'root://eosuser.cern.ch/' + path
     return path
 
-def request(dataset, prepid, sample, target_nevents=None, dryrun=False, outdir=None):
+def request(dataset, prepid, sample, target_nevents=None, dryrun=False, nolog=False, outdir=None):
     jobstr = '''Universe = vanilla
 Executable = %s
 
@@ -112,8 +112,11 @@ Queue NEVENT, FILEIN, FILEOUT, LOGPREFIX from (
         print('%s %s' % (('Skipping' if success else 'Adding'), fileout))
         if success: continue
         #os.close(os.open(fileout, os.O_WRONLY | os.O_TRUNC))  # truncate
-        logprefix = os.path.join(logdir, os.path.splitext(filename)[0])
         filein, fileout = map(eos_to_xrd, (filein, fileout))
+        if nolog:
+            logprefix = os.path.join(logdir, 'overwritten')
+        else:
+            logprefix = os.path.join(logdir, os.path.splitext(filename)[0])
         queue += '%s, %s, %s, %s\n' % (nevents, filein, fileout, logprefix)
     jobfile = prepid + '.jdl'
     open(jobfile, 'w').write(jobstr % (executable, x509up, prog, queue))
@@ -122,6 +125,8 @@ Queue NEVENT, FILEIN, FILEOUT, LOGPREFIX from (
 prepid = sys.argv[1]
 nevent = (int(sys.argv[2]) if len(sys.argv) > 2 else None) or None
 dryrun = eval(sys.argv[3]) if len(sys.argv) > 3 else False
+nolog = eval(sys.argv[4]) if len(sys.argv) > 4 else False
+
 if prepid == 'describe':
     prefix = ' ' * 6
     for dataset, dataset_samples in sorted(samples.items()):
@@ -144,7 +149,7 @@ if prepid == 'list':
 for dataset, dataset_samples in samples.items():
     if prepid != 'all' and prepid not in dataset_samples: continue
     for pid in (dataset_samples.keys() if prepid == 'all' else [prepid]):
-        request(dataset, pid, dataset_samples[pid], nevent, dryrun)
+        request(dataset, pid, dataset_samples[pid], nevent, dryrun, nolog)
     if prepid != 'all': break
 else:
     if prepid != 'all': raise RuntimeError('prepid not recognized: %s' % prepid)

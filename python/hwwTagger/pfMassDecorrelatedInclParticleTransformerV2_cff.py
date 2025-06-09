@@ -67,7 +67,9 @@ _pfMassDecorrelatedInclParticleTransformerAK15V2JetTagsProbs = ['pfMassDecorrela
                                  for flav_name in pfMassDecorrelatedInclParticleTransformerAK15V2JetTags.flav_names]
 
 _pfMassDecorrelatedInclParticleTransformerAK15V2JetTagsProbsSelected = ['pfMassDecorrelatedInclParticleTransformerAK15V2JetTags:' + flav_name
-                                 for flav_name in ['probHbb', 'probHcc', 'probHss', 'probHqq', 'probHbc', 'probHbs', 'probHcs', 'probHgg', 'probHee', 'probHmm', 'probHtauhtaue', 'probHtauhtaum', 'probHtauhtauh', 
+                                 for flav_name in ['probTopbWcs', 'probTopbWqq', 'probTopbWc', 'probTopbWs', 'probTopbWq', 'probTopbWev', 'probTopbWmv', 'probTopbWtauev', 'probTopbWtaumv', 'probTopbWtauhv', 
+                                                   'probTopWcs', 'probTopWqq', 'probTopWev', 'probTopWmv', 'probTopWtauev', 'probTopWtaumv', 'probTopWtauhv', 
+                                                   'probHbb', 'probHcc', 'probHss', 'probHqq', 'probHbc', 'probHbs', 'probHcs', 'probHgg', 'probHee', 'probHmm', 'probHtauhtaue', 'probHtauhtaum', 'probHtauhtauh', 
                                                    'probQCDbb', 'probQCDcc', 'probQCDb', 'probQCDc', 'probQCDothers', 
                                                    'resonanceMassCorr', 'visiableMassCorr']]
 # meta-taggers
