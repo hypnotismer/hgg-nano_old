@@ -113,7 +113,7 @@ def setupAK15(process, runOnMC=False, path=None, runParticleNet=False, runPartic
             tau1=Var("userFloat('NjettinessAK15Puppi:tau1')", float, doc="Nsubjettiness (1 axis)", precision=10),
             tau2=Var("userFloat('NjettinessAK15Puppi:tau2')", float, doc="Nsubjettiness (2 axis)", precision=10),
             tau3=Var("userFloat('NjettinessAK15Puppi:tau3')", float, doc="Nsubjettiness (3 axis)", precision=10),
-            tau4=Var("userFloat('NjettinessAK15Puppi:tau4')", float, doc="Nsubjettiness (4 axis)", precision=10),
+            #tau4=Var("userFloat('NjettinessAK15Puppi:tau4')", float, doc="Nsubjettiness (4 axis)", precision=10),
             #tau5=Var("userFloat('NjettinessAK15Puppi:tau5')", float, doc="Nsubjettiness (5 axis)", precision=10),
             #tau6=Var("userFloat('NjettinessAK15Puppi:tau6')", float, doc="Nsubjettiness (6 axis)", precision=10),
             msoftdrop=Var("groomedMass()", float, doc="Corrected soft drop mass with PUPPI", precision=10),
