@@ -14,6 +14,9 @@ NEVENT="$1"
 NTHREAD="$2"
 FILEIN="$3"
 FILEOUT="$4"
+filename=$(basename "$FILEOUT")
+mkdir tmp
+
 if [ -z "${FILEOUT}" ]; then
     FILEOUT="${FILEIN/MiniAODv2/CustomizedNanoAODv9}"
 fi
@@ -34,6 +37,12 @@ PhysicsTools/NanoTuples/scripts/install_onnxruntime.sh
 wget https://coli.web.cern.ch/coli/tmp/.231117-195737_ak15_stage2/model.onnx -O $CMSSW_BASE/src/PhysicsTools/NanoTuples/data/InclParticleTransformer-MD/ak15/V02/model.onnx
 scram b -j$(cat /proc/cpuinfo | grep MHz | wc -l)
 
+cd ../../tmp
+workdir=`pwd`
+path="$workdir/$filename"
+cd ..
+cd CMSSW_10_6_31/src
+
 cmsDriver.py \
     --data \
     -n "${NEVENT}" \
@@ -46,4 +55,6 @@ cmsDriver.py \
     --era Run2_2018,run2_nanoAOD_106Xv2 \
     --customise PhysicsTools/NanoTuples/nanoTuples_cff.nanoTuples_customizeData \
     --filein "${FILEIN}" \
-    --fileout "${FILEOUT}" \
+    --fileout "${path}" \
+
+xrdcp --silent -p -f ${path} ${FILEOUT}

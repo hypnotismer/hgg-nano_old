@@ -12,8 +12,8 @@ import traceback
 
 samples = sample.list_samples()
 
-if len(sys.argv) < 2 or len(sys.argv) > 5:
-    print('Usage: %s [ <prepid> [ <nevent> [ <dryrun> <nolog> ] ] ]' % os.path.basename(sys.argv[0]))
+if len(sys.argv) < 3 or len(sys.argv) > 6:
+    print('Usage: %s [ <dataset> <prepid> [ <nevent> [ <dryrun> <nolog> ] ] ]' % os.path.basename(sys.argv[0]))
     print('\nAvailable prepids:')
     for dataset, dataset_samples in sorted(samples.items()):
         print('\n-', dataset)
@@ -28,20 +28,20 @@ def generate_x509up(x509up=None):
             raise RuntimeError('error generating x509 user proxy')
     return x509up
 
+def eos_to_xrd(path):
+    if path[:4] == '/eos': return 'root://eosuser.cern.ch/' + path
+    return path
+
 def check_success(fileout, nevents):
-    os.system("touch '%s'" % fileout)
+    #os.system("touch '%s'" % fileout)
     try:
         #return os.stat(fileout).st_size >= 12*4096  # fast check
         import ROOT
-        tfile = ROOT.TFile(fileout)
+        tfile = ROOT.TFile.Open(fileout)
         return tfile.Get('Events').GetEntries() == nevents  # reliable check
     except Exception:
         traceback.print_exc()
         return False
-
-def eos_to_xrd(path):
-    if path[:4] == '/eos': return 'root://eosuser.cern.ch/' + path
-    return path
 
 def request(dataset, prepid, sample, target_nevents=None, dryrun=False, nolog=False, outdir=None):
     jobstr = '''Universe = vanilla
@@ -96,7 +96,7 @@ Queue NEVENT, FILEIN, FILEOUT, LOGPREFIX from (
             raise RuntimeError('year not recognized in prepid: %s' % prepid)
     if not outdir:
         user = __import__('getpass').getuser()
-        outdir = f'/eos/user/{user[0]}/{user}/CustomizedNanoAOD/V0/{year}/{"Data" if isdata else "MC"}'
+        outdir = f'root://cceos.ihep.ac.cn:1094//store/user/{user}/CustomizedNanoAOD/V0/{year}/{"Data" if isdata else "MC"}'
     executable = os.path.abspath(os.path.join(basedir, 'scripts', 'x509run'))
     x509up = generate_x509up()
     prog = os.path.abspath(os.path.join(basedir, 'scripts', f'run-{"data" if isdata else "mc"}-{year}.sh'))
@@ -122,10 +122,11 @@ Queue NEVENT, FILEIN, FILEOUT, LOGPREFIX from (
     open(jobfile, 'w').write(jobstr % (executable, x509up, prog, queue))
     ((print() or print) if dryrun else os.system)("condor_submit -file '%s'" % jobfile)
 
-prepid = sys.argv[1]
-nevent = (int(sys.argv[2]) if len(sys.argv) > 2 else None) or None
-dryrun = eval(sys.argv[3]) if len(sys.argv) > 3 else False
-nolog = eval(sys.argv[4]) if len(sys.argv) > 4 else False
+dataset_name = (sys.argv[1] if len(sys.argv) > 1 else None) or None
+prepid = sys.argv[2]
+nevent = (int(sys.argv[3]) if len(sys.argv) > 3 else None) or None
+dryrun = eval(sys.argv[4]) if len(sys.argv) > 4 else False
+nolog = eval(sys.argv[5]) if len(sys.argv) > 5 else False
 
 if prepid == 'describe':
     prefix = ' ' * 6
@@ -149,7 +150,10 @@ if prepid == 'list':
 for dataset, dataset_samples in samples.items():
     if prepid != 'all' and prepid not in dataset_samples: continue
     for pid in (dataset_samples.keys() if prepid == 'all' else [prepid]):
-        request(dataset, pid, dataset_samples[pid], nevent, dryrun, nolog)
+        if dataset_name is not None:
+            request(dataset_name, pid, dataset_samples[pid], nevent, dryrun, nolog)
+        else:
+            request(dataset, pid, dataset_samples[pid], nevent, dryrun, nolog)
     if prepid != 'all': break
 else:
     if prepid != 'all': raise RuntimeError('prepid not recognized: %s' % prepid)
