@@ -220,6 +220,12 @@ def getCustomTaggerDiscriminatorsAK15(name):
             'disc_name': '_pfMassDecorrelatedInclParticleTransformerAK15V2JetTagsAllSelected',
             'nano_branch_name': 'inclParTMDV2',
         },
+
+        'InclParticleTransformerAK15V2-hgg': {  # GloParT-2 fine-tuned for H->gluglu
+            'cff_path': 'PhysicsTools.NanoTuples.hwwTagger.pfMassDecorrelatedHglugluV2_cff',
+            'disc_name': '_pfMassDecorrelatedHglugluV2JetTagsProbs',
+            'nano_branch_name': 'inclParTMDV2_finetune',
+        },
     }
     if name not in customTaggersAvailableDict:
         raise ValueError("the specified tagger '%s' does not exist." % name)
