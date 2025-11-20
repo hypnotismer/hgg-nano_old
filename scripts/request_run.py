@@ -108,7 +108,8 @@ Queue NEVENT, FILEIN, FILEOUT, LOGPREFIX from (
     for nevents, filein in sample.select(target_nevents):
         filename = os.path.basename(filein)
         fileout = os.path.join(outdir, filename.replace('MiniAODv2', 'CustomizedNanoAODv9'))
-        success = check_success(fileout, nevents)
+        #success = check_success(fileout, nevents)
+        success = False
         print('%s %s' % (('Skipping' if success else 'Adding'), fileout))
         if success: continue
         #os.close(os.open(fileout, os.O_WRONLY | os.O_TRUNC))  # truncate
@@ -118,7 +119,7 @@ Queue NEVENT, FILEIN, FILEOUT, LOGPREFIX from (
         else:
             logprefix = os.path.join(logdir, os.path.splitext(filename)[0])
         queue += '%s, %s, %s, %s\n' % (nevents, filein, fileout, logprefix)
-    jobfile = prepid + '.jdl'
+    jobfile = dataset + '_' + prepid + '.jdl'
     open(jobfile, 'w').write(jobstr % (executable, x509up, prog, queue))
     ((print() or print) if dryrun else os.system)("condor_submit -file '%s'" % jobfile)
 
