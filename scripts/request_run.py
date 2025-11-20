@@ -102,7 +102,7 @@ Queue NEVENT, FILEIN, FILEOUT, LOGPREFIX from (
     prog = os.path.abspath(os.path.join(basedir, 'scripts', f'run-{"data" if isdata else "mc"}-{year}.sh'))
     outdir = os.path.join(outdir, dataset, prepid)
     logdir = os.path.join(basedir, 'scripts', 'log', dataset, prepid)
-    if os.system("mkdir -p '%s' '%s'" % (outdir, logdir)):
+    if os.system("mkdir -p '%s'" % logdir):
         raise RuntimeError('error making directories')
     queue = ''
     for nevents, filein in sample.select(target_nevents):
