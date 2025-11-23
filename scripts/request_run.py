@@ -149,6 +149,7 @@ if prepid == 'list':
                 print('      - %s' % filein)
     sys.exit(0)
 for dataset, dataset_samples in samples.items():
+    if dataset_name is not None and dataset != dataset_name: continue
     if prepid != 'all' and prepid not in dataset_samples: continue
     for pid in (dataset_samples.keys() if prepid == 'all' else [prepid]):
         if dataset_name is not None:
