@@ -32,6 +32,12 @@ def eos_to_xrd(path):
     if path[:4] == '/eos': return 'root://eosuser.cern.ch/' + path
     return path
 
+def local_output_dataset(filein, dataset):
+    if not os.path.isabs(filein):
+        return dataset
+    parent = os.path.basename(os.path.dirname(filein))
+    return parent or dataset
+
 def check_success(fileout, nevents):
     #os.system("touch '%s'" % fileout)
     try:
@@ -100,14 +106,15 @@ Queue NEVENT, FILEIN, FILEOUT, LOGPREFIX from (
     executable = os.path.abspath(os.path.join(basedir, 'scripts', 'x509run'))
     x509up = generate_x509up()
     prog = os.path.abspath(os.path.join(basedir, 'scripts', f'run-{"data" if isdata else "mc"}-{year}.sh'))
-    outdir = os.path.join(outdir, dataset, prepid)
+    outbase = outdir
     logdir = os.path.join(basedir, 'scripts', 'log', dataset, prepid)
     if os.system("mkdir -p '%s'" % logdir):
         raise RuntimeError('error making directories')
     queue = ''
     for nevents, filein in sample.select(target_nevents):
         filename = os.path.basename(filein)
-        fileout = os.path.join(outdir, filename.replace('MiniAODv2', 'CustomizedNanoAODv9'))
+        output_dataset = local_output_dataset(filein, dataset)
+        fileout = os.path.join(outbase, output_dataset, prepid, filename.replace('MiniAODv2', 'CustomizedNanoAODv9'))
         #success = check_success(fileout, nevents)
         success = False
         print('%s %s' % (('Skipping' if success else 'Adding'), fileout))

@@ -1,0 +1,7 @@
+<use name="boost"/>
+<use name="DataFormats/HepMCCandidate"/>
+<use name="DataFormats/Math"/>
+<use name="DataFormats/PatCandidates"/>
+<export>
+  <lib name="1"/>
+</export>

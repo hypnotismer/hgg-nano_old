@@ -4,6 +4,26 @@ from PhysicsTools.NanoAOD.common_cff import *
 # ---------------------------------------------------------
 
 
+_AK15_INCLPARTMDV2_PREPROCESS_JSON = 'PhysicsTools/NanoTuples/data/InclParticleTransformer-MD/ak15/V02/preprocess.json'
+
+
+def _load_label_names_from_preprocess_json(relative_path):
+    import json
+    import os
+
+    for env_name in ('CMSSW_BASE', 'CMSSW_RELEASE_BASE'):
+        base = os.environ.get(env_name)
+        if not base:
+            continue
+        path = os.path.join(base, 'src', relative_path)
+        if os.path.exists(path):
+            with open(path) as handle:
+                output_names = json.load(handle)['output_names']
+            return [str(name) for name in output_names if name.startswith('label_')]
+
+    raise RuntimeError('Could not find %s in CMSSW_BASE or CMSSW_RELEASE_BASE' % relative_path)
+
+
 def setupAK15(process, runOnMC=False, path=None, runParticleNet=False, runParticleNetMD=True, customAK15Taggers=[]):
     # recluster Puppi jets
     bTagDiscriminators = [
@@ -175,6 +195,19 @@ def setupAK15(process, runOnMC=False, path=None, runParticleNet=False, runPartic
     )
 
     if runOnMC:
+        if 'InclParticleTransformerAK15V2' in customAK15Taggers:
+            process.ak15InclParTMDV2MatchingTable = cms.EDProducer("FatJetMatchingTableProducer",
+                src=cms.InputTag("ak15WithUserData"),
+                genParticles=cms.InputTag("prunedGenParticles"),
+                name=cms.string("AK15Puppi"),
+                labelName=cms.string("inclParTMDV2_label"),
+                jetRadius=cms.double(1.5),
+                isMDTagger=cms.bool(True),
+                isHVV2DVarMassSample=cms.bool(False),
+                labels=cms.vstring(*_load_label_names_from_preprocess_json(_AK15_INCLPARTMDV2_PREPROCESS_JSON)),
+            )
+            process.ak15Task.add(process.ak15InclParTMDV2MatchingTable)
+
         process.genJetAK15Table = cms.EDProducer("SimpleCandidateFlatTableProducer",
             src=cms.InputTag("ak15GenJetsNoNu"),
             cut=cms.string("pt > 100."),

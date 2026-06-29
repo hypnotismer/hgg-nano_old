@@ -102,13 +102,14 @@ Queue NEVENT, FILEIN, FILEOUT, LOGPREFIX from (
     prog = os.path.abspath(os.path.join(basedir, 'scripts', f'run-{"data" if isdata else "mc"}-{year}-slim.sh'))
     outdir = os.path.join(outdir, dataset, prepid)
     logdir = os.path.join(basedir, 'scripts', 'log', dataset, prepid)
-    if os.system("mkdir -p '%s' '%s'" % (outdir, logdir)):
+    if os.system("mkdir -p '%s'" % logdir):
         raise RuntimeError('error making directories')
     queue = ''
     for nevents, filein in sample.select(target_nevents):
         filename = os.path.basename(filein)
         fileout = os.path.join(outdir, filename.replace('MiniAODv2', 'CustomizedNanoAODv9'))
-        success = check_success(fileout, nevents)
+        #success = check_success(fileout, nevents)
+        success = False
         print('%s %s' % (('Skipping' if success else 'Adding'), fileout))
         if success: continue
         #os.close(os.open(fileout, os.O_WRONLY | os.O_TRUNC))  # truncate
@@ -118,7 +119,7 @@ Queue NEVENT, FILEIN, FILEOUT, LOGPREFIX from (
         else:
             logprefix = os.path.join(logdir, os.path.splitext(filename)[0])
         queue += '%s, %s, %s, %s\n' % (nevents, filein, fileout, logprefix)
-    jobfile = prepid + '.jdl'
+    jobfile = dataset + '_' + prepid + '.jdl'
     open(jobfile, 'w').write(jobstr % (executable, x509up, prog, queue))
     ((print() or print) if dryrun else os.system)("condor_submit -file '%s'" % jobfile)
 
@@ -148,6 +149,7 @@ if prepid == 'list':
                 print('      - %s' % filein)
     sys.exit(0)
 for dataset, dataset_samples in samples.items():
+    if dataset_name is not None and dataset != dataset_name: continue
     if prepid != 'all' and prepid not in dataset_samples: continue
     for pid in (dataset_samples.keys() if prepid == 'all' else [prepid]):
         if dataset_name is not None:
