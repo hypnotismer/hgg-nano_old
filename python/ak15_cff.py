@@ -4,10 +4,10 @@ from PhysicsTools.NanoAOD.common_cff import *
 # ---------------------------------------------------------
 
 
-_AK15_INCLPARTMDV2_PREPROCESS_JSON = 'PhysicsTools/NanoTuples/data/InclParticleTransformer-MD/ak15/V02/preprocess.json'
+_AK15_FATJET_MATCHING_LABELS_JSON = 'PhysicsTools/NanoTuples/data/FatJetMatching/ak15/md_labels.json'
 
 
-def _load_label_names_from_preprocess_json(relative_path):
+def _load_fatjet_matching_labels(relative_path):
     import json
     import os
 
@@ -18,8 +18,7 @@ def _load_label_names_from_preprocess_json(relative_path):
         path = os.path.join(base, 'src', relative_path)
         if os.path.exists(path):
             with open(path) as handle:
-                output_names = json.load(handle)['output_names']
-            return [str(name) for name in output_names if name.startswith('label_')]
+                return [str(label) for label in json.load(handle)['labels']]
 
     raise RuntimeError('Could not find %s in CMSSW_BASE or CMSSW_RELEASE_BASE' % relative_path)
 
@@ -204,7 +203,7 @@ def setupAK15(process, runOnMC=False, path=None, runParticleNet=False, runPartic
                 jetRadius=cms.double(1.5),
                 isMDTagger=cms.bool(True),
                 isHVV2DVarMassSample=cms.bool(False),
-                labels=cms.vstring(*_load_label_names_from_preprocess_json(_AK15_INCLPARTMDV2_PREPROCESS_JSON)),
+                labels=cms.vstring(*_load_fatjet_matching_labels(_AK15_FATJET_MATCHING_LABELS_JSON)),
             )
             process.ak15Task.add(process.ak15InclParTMDV2MatchingTable)
 

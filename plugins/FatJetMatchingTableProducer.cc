@@ -124,7 +124,7 @@ void FatJetMatchingTableProducer::produce(edm::Event &iEvent, const edm::EventSe
   auto table = std::make_unique<nanoaod::FlatTable>(jets->size(), name_, false, true);
   table->addColumn<int>(label_name_,
                         labels,
-                        "Generator-level fat-jet truth label index following the tagger training label order",
+                        "Generator-level fat-jet truth label index following the matching label order",
                         nanoaod::FlatTable::IntColumn);
   iEvent.put(std::move(table), name_);
 }
