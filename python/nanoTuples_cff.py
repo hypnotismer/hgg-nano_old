@@ -60,7 +60,7 @@ def nanoTuples_customizeCommon(process, runOnMC, addAK15=True, addAK8=False, add
 
 
 def nanoTuples_customizeData(process):
-    process = nanoTuples_customizeCommon(process, False, addAK15=True, addAK8=False, addPFcands=False, customAK8Taggers=[], customAK15Taggers=['InclParticleTransformerAK15V2'])
+    process = nanoTuples_customizeCommon(process, False, addAK15=True, addAK8=False, addPFcands=False, customAK8Taggers=[], customAK15Taggers=['InclParticleTransformerAK15V2', 'InclParticleTransformerAK15V2-xggg'])
 
     process.NANOAODoutput.fakeNameForCrab = cms.untracked.bool(True)  # hack for crab publication
     process.add_(cms.Service("InitRootHandlers", EnableIMT=cms.untracked.bool(False)))
@@ -68,7 +68,7 @@ def nanoTuples_customizeData(process):
 
 
 def nanoTuples_customizeMC(process):
-    process = nanoTuples_customizeCommon(process, True, addAK15=True, addAK8=False, addPFcands=False, customAK8Taggers=[], customAK15Taggers=['InclParticleTransformerAK15V2'])
+    process = nanoTuples_customizeCommon(process, True, addAK15=True, addAK8=False, addPFcands=False, customAK8Taggers=[], customAK15Taggers=['InclParticleTransformerAK15V2', 'InclParticleTransformerAK15V2-xggg'])
 
     process.NANOAODSIMoutput.fakeNameForCrab = cms.untracked.bool(True)  # hack for crab publication
     process.add_(cms.Service("InitRootHandlers", EnableIMT=cms.untracked.bool(False)))

@@ -4,11 +4,13 @@ def updateSupportedBtagDiscr(supportedBtagInfos, supportedBtagDiscr, supportedMe
     from PhysicsTools.NanoTuples.hwwTagger.pfMassDecorrelatedDeepHWWV1_cff import _pfMassDecorrelatedDeepHWWV1JetTagsProbs, _pfMassDecorrelatedDeepHWWV1JetTagsMetaDiscrs
     from PhysicsTools.NanoTuples.hwwTagger.pfMassDecorrelatedInclParticleTransformerV1_cff import _pfMassDecorrelatedInclParticleTransformerV1JetTagsProbs, _pfMassDecorrelatedInclParticleTransformerV1JetTagsMetaDiscrs
     from PhysicsTools.NanoTuples.hwwTagger.pfMassDecorrelatedInclParticleTransformerV2_cff import _pfMassDecorrelatedInclParticleTransformerV2JetTagsProbs, _pfMassDecorrelatedInclParticleTransformerV2JetTagsMetaDiscrs, _pfMassDecorrelatedInclParticleTransformerAK15V2JetTagsProbs, _pfMassDecorrelatedInclParticleTransformerAK15V2JetTagsMetaDiscrs
-    
+    from PhysicsTools.NanoTuples.hwwTagger.pfMassDecorrelatedXgggFinetuneV2_cff import _pfMassDecorrelatedXgggFinetuneV2JetTagsProbs
+
     # update supportedBtagDiscr
     supportedBtagInfos.extend(["pfMassDecorrelatedDeepHWWV1TagInfos"])
     supportedBtagInfos.extend(["pfMassDecorrelatedInclParticleTransformerV1TagInfos"])
     supportedBtagInfos.extend(["pfMassDecorrelatedInclParticleTransformerV2TagInfos"])
+    supportedBtagInfos.extend(["pfMassDecorrelatedXgggFinetuneV2TagInfos"])
     for disc in _pfMassDecorrelatedDeepHWWV1JetTagsProbs + _pfMassDecorrelatedDeepHWWV1JetTagsMetaDiscrs:
         supportedBtagDiscr[disc] = [["pfMassDecorrelatedDeepHWWV1TagInfos"]]
     for disc in _pfMassDecorrelatedInclParticleTransformerV1JetTagsProbs + _pfMassDecorrelatedInclParticleTransformerV1JetTagsMetaDiscrs:
@@ -17,6 +19,8 @@ def updateSupportedBtagDiscr(supportedBtagInfos, supportedBtagDiscr, supportedMe
         supportedBtagDiscr[disc] = [["pfMassDecorrelatedInclParticleTransformerV2TagInfos"]]
     for disc in _pfMassDecorrelatedInclParticleTransformerAK15V2JetTagsProbs + _pfMassDecorrelatedInclParticleTransformerAK15V2JetTagsMetaDiscrs:
         supportedBtagDiscr[disc] = [["pfMassDecorrelatedInclParticleTransformerAK15V2TagInfos"]]
+    for disc in _pfMassDecorrelatedXgggFinetuneV2JetTagsProbs:
+        supportedBtagDiscr[disc] = [["pfMassDecorrelatedXgggFinetuneV2TagInfos"]]
     # update supportedMetaDiscr
     for disc in _pfMassDecorrelatedDeepHWWV1JetTagsMetaDiscrs:
         supportedMetaDiscr[disc] = _pfMassDecorrelatedDeepHWWV1JetTagsProbs
@@ -33,3 +37,4 @@ def updateSupportedBtagDiscr(supportedBtagInfos, supportedBtagDiscr, supportedMe
 from PhysicsTools.NanoTuples.hwwTagger.pfMassDecorrelatedDeepHWWV1_cff import *
 from PhysicsTools.NanoTuples.hwwTagger.pfMassDecorrelatedInclParticleTransformerV1_cff import *
 from PhysicsTools.NanoTuples.hwwTagger.pfMassDecorrelatedInclParticleTransformerV2_cff import *
+from PhysicsTools.NanoTuples.hwwTagger.pfMassDecorrelatedXgggFinetuneV2_cff import *

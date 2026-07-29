@@ -52,6 +52,9 @@ def setupAK15(process, runOnMC=False, path=None, runParticleNet=False, runPartic
         process.ak15GenJetsNoNu.jetPtMin = 100
         process.ak15GenJetsNoNuSoftDrop.jetPtMin = 100
 
+    process.puppi.useExistingWeights = cms.bool(False)
+    process.puppiNoLep.useExistingWeights = cms.bool(False)
+
     # from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
     from PhysicsTools.NanoTuples.jetTools import updateJetCollection as updateJetCollectionCustom
     from RecoBTag.ONNXRuntime.pfParticleNet_cff import _pfMassDecorrelatedParticleNetJetTagsProbs as pfMassDecorrelatedParticleNetJetTagsProbs
@@ -251,6 +254,11 @@ def getCustomTaggerDiscriminatorsAK15(name):
             'cff_path': 'PhysicsTools.NanoTuples.hwwTagger.pfMassDecorrelatedInclParticleTransformerV2_cff',
             'disc_name': '_pfMassDecorrelatedInclParticleTransformerAK15V2JetTagsAllSelected',
             'nano_branch_name': 'inclParTMDV2',
+        },
+        'InclParticleTransformerAK15V2-xggg': {
+            'cff_path': 'PhysicsTools.NanoTuples.hwwTagger.pfMassDecorrelatedXgggFinetuneV2_cff',
+            'disc_name': '_pfMassDecorrelatedXgggFinetuneV2JetTagsProbs',
+            'nano_branch_name': 'inclParTMDV2_xggg',
         },
     }
     if name not in customTaggersAvailableDict:
