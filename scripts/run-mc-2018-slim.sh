@@ -35,6 +35,7 @@ rm -rf PhysicsTools/NanoTuples
 git clone https://github.com/hypnotismer/NanoTuples_run2 PhysicsTools/NanoTuples -b dev-ak15tagger-UL-finetune-xggg
 PhysicsTools/NanoTuples/scripts/install_onnxruntime.sh
 wget https://coli.web.cern.ch/coli/tmp/.231117-195737_ak15_stage2/model.onnx -O $CMSSW_BASE/src/PhysicsTools/NanoTuples/data/InclParticleTransformer-MD/ak15/V02/model.onnx
+wget https://zkou.web.cern.ch/tmp/V02_xggg_finetune/model_opset11.onnx -O $CMSSW_BASE/src/PhysicsTools/NanoTuples/data/InclParticleTransformer-MD/ak15/V02_xggg_finetune/model_opset11.onnx
 scram b -j$(cat /proc/cpuinfo | grep MHz | wc -l)
 
 cmsDriver.py \
