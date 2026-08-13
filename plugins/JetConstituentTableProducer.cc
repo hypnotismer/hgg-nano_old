@@ -47,6 +47,7 @@ private:
 
   const std::string name_;
   const bool check_indices_;
+  const bool keep_low_puppi_;
 
   unsigned ncols_ = 0;
   std::vector<std::string> jet_names_;
@@ -71,6 +72,7 @@ private:
 JetConstituentTableProducer::JetConstituentTableProducer(const edm::ParameterSet &iConfig)
     : name_(iConfig.getParameter<std::string>("name")),
       check_indices_(iConfig.getParameter<bool>("check_indices")),
+      keep_low_puppi_(iConfig.getParameter<bool>("keep_low_puppi")),
       vtx_token_(consumes<VertexCollection>(iConfig.getParameter<edm::InputTag>("vertices"))),
       pfcand_token_(consumes<CandidateView>(iConfig.getParameter<edm::InputTag>("pf_candidates"))) {
   const auto &pset = iConfig.getParameterSet("jets");
@@ -213,6 +215,11 @@ void JetConstituentTableProducer::produce(edm::Event &iEvent, const edm::EventSe
   }
 
   auto candTable = std::make_unique<nanoaod::FlatTable>(outCands->size(), name_, false);
+  std::vector<int> sourceCandIdx;
+  sourceCandIdx.reserve(outCands->size());
+  for (const auto &cand : *outCands)
+    sourceCandIdx.push_back(static_cast<int>(cand.key()));
+  candTable->addColumn<int>("candIdx", sourceCandIdx, "Index in packedPFCandidates", nanoaod::FlatTable::IntColumn);
   // We fill from here only stuff that cannot be created with the SimpleFlatTableProducer
   for (unsigned ic = 0; ic < ncols_; ++ic) {
     auto suffix = "_" + jet_names_[ic];
@@ -257,7 +264,7 @@ std::vector<JetConstituentTableProducer::CandidatePtr> JetConstituentTableProduc
     const auto *packed_cand = dynamic_cast<const pat::PackedCandidate *>(&(*cand));
     assert(packed_cand != nullptr);
     // remove particles w/ extremely low puppi weights (needed for 2017 MiniAOD)
-    if (isPuppi && packed_cand->puppiWeight() < 0.01)
+    if (isPuppi && !keep_low_puppi_ && packed_cand->puppiWeight() < 0.01)
       continue;
     // get the original reco/packed candidate not scaled by the puppi weight
     daughters.push_back(pfcands_->ptrAt(cand.key()));
@@ -271,6 +278,7 @@ void JetConstituentTableProducer::fillDescriptions(edm::ConfigurationDescription
   edm::ParameterSetDescription desc;
   desc.add<std::string>("name", "JetPFCands");
   desc.add<bool>("check_indices", false);
+  desc.add<bool>("keep_low_puppi", false);
   edm::ParameterSetDescription jets;
   jets.setAllowAnything();
   desc.add<edm::ParameterSetDescription>("jets", jets);

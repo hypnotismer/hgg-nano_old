@@ -2,7 +2,8 @@ import FWCore.ParameterSet.Config as cms
 from PhysicsTools.NanoAOD.common_cff import *
 
 
-def addPFCands(process, srcs=[], isPuppiJets=[], jetTables=[], cuts=None, outTableName='PFCands', path=None):
+def addPFCands(process, srcs=[], isPuppiJets=[], jetTables=[], cuts=None, outTableName='PFCands', path=None,
+               keepLowPuppi=False):
     if len(srcs) == 0:
         return
 
@@ -22,6 +23,7 @@ def addPFCands(process, srcs=[], isPuppiJets=[], jetTables=[], cuts=None, outTab
                                                   jets=cms.PSet(**jets),
                                                   name=cms.string(outTableName),
                                                   check_indices=cms.bool(False),  # turn on for debugging
+                                                  keep_low_puppi=cms.bool(keepLowPuppi),
                                                   )
 
     process.jetConstituentsExtTable = cms.EDProducer("SimpleCandidateFlatTableProducer",

@@ -6,7 +6,7 @@ if [ -z "${HOME}" ]; then
     export HOME="$(pwd)"
 fi
 
-if [ $# -lt 3 ]; then
+if [ $# -lt 4 ]; then
     >&2 echo "usage: $(basename "$0") <nevent> <nthread> <file-in> <file-out>"
     exit 1
 fi
@@ -14,6 +14,10 @@ NEVENT="$1"
 NTHREAD="$2"
 FILEIN="$3"
 FILEOUT="$4"
+CUSTOMISE="PhysicsTools/NanoTuples/nanoTuples_cff.nanoTuples_customizeMC"
+if [[ "${FILEIN}" == *"ZRTo3Glu"* ]]; then
+    CUSTOMISE="PhysicsTools/NanoTuples/nanoTuples_cff.nanoTuples_customizeZRTo3Glu"
+fi
 filename=$(basename "$FILEOUT")
 mkdir tmp
 
@@ -54,7 +58,7 @@ cmsDriver.py \
     --conditions 106X_upgrade2018_realistic_v16_L1v1 \
     --step NANO \
     --era Run2_2018,run2_nanoAOD_106Xv2 \
-    --customise PhysicsTools/NanoTuples/nanoTuples_cff.nanoTuples_customizeMC \
+    --customise "${CUSTOMISE}" \
     --filein "${FILEIN}" \
     --fileout "${path}" \
     --customise_commands 'process.source.duplicateCheckMode = cms.untracked.string("noDuplicateCheck")' \

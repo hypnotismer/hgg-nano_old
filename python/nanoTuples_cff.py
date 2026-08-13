@@ -32,7 +32,8 @@ def nanoTuples_customizeFatJetTable(process, runOnMC, addDeepAK8Probs=False):
     return process
 
 
-def nanoTuples_customizeCommon(process, runOnMC, addAK15=True, addAK8=False, addPFcands=False, customAK8Taggers=[], customAK15Taggers=[]):
+def nanoTuples_customizeCommon(process, runOnMC, addAK15=True, addAK8=False, addPFcands=False,
+                               keepLowPuppi=False, customAK8Taggers=[], customAK15Taggers=[]):
     pfcand_params = {'srcs': [], 'isPuppiJets':[], 'jetTables':[]}
     if addAK15:
         setupAK15(process, runOnMC=runOnMC, runParticleNet=False, runParticleNetMD=True, customAK15Taggers=customAK15Taggers)
@@ -51,7 +52,7 @@ def nanoTuples_customizeCommon(process, runOnMC, addAK15=True, addAK8=False, add
         pfcand_params['isPuppiJets'].append(True)
         pfcand_params['jetTables'].append('fatJetTable')
     if addPFcands:
-        addPFCands(process, outTableName='PFCands', **pfcand_params)
+        addPFCands(process, outTableName='PFCands', keepLowPuppi=keepLowPuppi, **pfcand_params)
 
     # nanoTuples_customizeVectexTable(process)
     # nanoTuples_customizeFatJetTable(process, runOnMC=runOnMC)
@@ -72,4 +73,25 @@ def nanoTuples_customizeMC(process):
 
     process.NANOAODSIMoutput.fakeNameForCrab = cms.untracked.bool(True)  # hack for crab publication
     process.add_(cms.Service("InitRootHandlers", EnableIMT=cms.untracked.bool(False)))
+    return process
+
+
+def nanoTuples_customizeZRTo3Glu(process):
+    """Signal-only NanoAOD content needed to derive the AK15 Lund-plane calibration."""
+    process = nanoTuples_customizeCommon(
+        process, True, addAK15=True, addAK8=False, addPFcands=True, keepLowPuppi=True,
+        customAK8Taggers=[],
+        customAK15Taggers=['InclParticleTransformerAK15V2', 'InclParticleTransformerAK15V2-xggg'])
+
+    process.finalGenParticles.select.append('keep++ abs(pdgId) == 32')
+    process.zrTo3GluTruthTable = cms.EDProducer(
+        'ZRTo3GluTruthTableProducer',
+        src=cms.InputTag('finalGenParticles'),
+        zrPdgId=cms.int32(32),
+    )
+    process.zrTo3GluTruthTask = cms.Task(process.zrTo3GluTruthTable)
+    process.schedule.associate(process.zrTo3GluTruthTask)
+
+    process.NANOAODSIMoutput.fakeNameForCrab = cms.untracked.bool(True)
+    process.add_(cms.Service('InitRootHandlers', EnableIMT=cms.untracked.bool(False)))
     return process
