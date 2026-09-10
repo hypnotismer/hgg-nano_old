@@ -52,9 +52,6 @@ def setupAK15(process, runOnMC=False, path=None, runParticleNet=False, runPartic
         process.ak15GenJetsNoNu.jetPtMin = 100
         process.ak15GenJetsNoNuSoftDrop.jetPtMin = 100
 
-    process.puppi.useExistingWeights = cms.bool(False)
-    process.puppiNoLep.useExistingWeights = cms.bool(False)
-
     # from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
     from PhysicsTools.NanoTuples.jetTools import updateJetCollection as updateJetCollectionCustom
     from RecoBTag.ONNXRuntime.pfParticleNet_cff import _pfMassDecorrelatedParticleNetJetTagsProbs as pfMassDecorrelatedParticleNetJetTagsProbs
